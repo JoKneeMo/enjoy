@@ -7,7 +7,7 @@
     "build": "tsc",
     "validate": "node dist/index.js validate",
     "apply-effect": "node dist/index.js apply",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "bad-words": "^3.0.4",
