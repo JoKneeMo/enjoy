@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎤 Voice Contribution - Enjoy</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --accent: #58a6ff;
+            --success: #3fb950;
+            --danger: #f85149;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .subtitle { color: #8b949e; margin-bottom: 2rem; }
+        .notice {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        .record-btn {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 2rem 0;
+        }
+        .record-btn:hover { border-color: var(--accent); }
+        .record-btn.recording {
+            border-color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .result {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            min-height: 80px;
+        }
+        .result-word {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .submit-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            display: none;
+        }
+        .submit-btn:hover { opacity: 0.9; }
+        .submit-btn.show { display: inline-block; }
+        .status { margin-top: 1rem; font-size: 0.9rem; }
+        .status.error { color: var(--danger); }
+        .status.success { color: var(--success); }
+        .back { margin-top: 2rem; color: var(--accent); text-decoration: none; }
+        .info { font-size: 0.8rem; color: #8b949e; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Voice</h1>
+        <p class="subtitle">Say your word. No Git needed.</p>
+        
+        <div class="notice">
+            📢 Audio is NOT stored. Only the transcribed word is submitted.<br>
+            A human will review before it joins the game.
+        </div>
+        
+        <button class="record-btn" id="recordBtn">🎙️</button>
+        <p id="instruction">Tap to record</p>
+        
+        <div class="result" id="result" style="display:none">
+            <small>Your word:</small>
+            <div class="result-word" id="wordResult"></div>
+        </div>
+        
+        <button class="submit-btn" id="submitBtn">Submit Word</button>
+        
+        <p class="status" id="status"></p>
+        
+        <a href="/" class="back">← Back to game</a>
+        
+        <p class="info">
+            Uses browser speech recognition. Works in Chrome, Edge, Safari.<br>
+            Your voice is processed locally, never uploaded.
+        </p>
+    </div>
+
+    <script>
+        const recordBtn = document.getElementById('recordBtn');
+        const instruction = document.getElementById('instruction');
+        const result = document.getElementById('result');
+        const wordResult = document.getElementById('wordResult');
+        const submitBtn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        let recognition = null;
+        let isRecording = false;
+        let transcribedWord = '';
+        
+        // Check browser support
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            instruction.textContent = '❌ Your browser does not support voice input';
+            recordBtn.disabled = true;
+        } else {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim();
+                // Take only first word
+                transcribedWord = transcript.split(' ')[0].toUpperCase();
+                
+                result.style.display = 'block';
+                wordResult.textContent = transcribedWord;
+                submitBtn.classList.add('show');
+                instruction.textContent = 'Tap to record again';
+            };
+            
+            recognition.onerror = (event) => {
+                status.textContent = '❌ ' + event.error;
+                status.className = 'status error';
+                stopRecording();
+            };
+            
+            recognition.onend = () => {
+                stopRecording();
+            };
+        }
+        
+        function startRecording() {
+            isRecording = true;
+            recordBtn.classList.add('recording');
+            recordBtn.textContent = '⏺️';
+            instruction.textContent = 'Listening...';
+            status.textContent = '';
+            recognition.start();
+        }
+        
+        function stopRecording() {
+            isRecording = false;
+            recordBtn.classList.remove('recording');
+            recordBtn.textContent = '🎙️';
+        }
+        
+        recordBtn.addEventListener('click', () => {
+            if (!recognition) return;
+            
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                startRecording();
+            }
+        });
+        
+        submitBtn.addEventListener('click', async () => {
+            if (!transcribedWord) return;
+            
+            submitBtn.disabled = true;
+            status.textContent = '⏳ Submitting...';
+            status.className = 'status';
+            
+            // Create GitHub Issue via API (needs to be done via a backend or GitHub App)
+            // For now, redirect to create issue manually with pre-filled data
+            const issueTitle = `🎤 Voice: ${transcribedWord}`;
+            const issueBody = `## Voice Contribution
+
+**Word:** ${transcribedWord}
+
+---
+*Submitted via voice input*
+*Awaiting human approval*`;
+            
+            const issueUrl = `https://github.com/fabriziosalmi/enjoy/issues/new?` + 
+                `title=${encodeURIComponent(issueTitle)}` +
+                `&body=${encodeURIComponent(issueBody)}` +
+                `&labels=voice-contribution`;
+            
+            window.location.href = issueUrl;
+        });
+    </script>
+</body>
+</html>

@@ -6,6 +6,8 @@
 
 **This repo is a game. Play it with Pull Requests.**
 
+> ⚠️ This is not storage. It's a living artwork made of code, people and moments. Things evolve. Things fade. That's the game.
+
 🌐 **[Play Now →](https://fabriziosalmi.github.io/enjoy/)**
 
 ---
@@ -56,6 +58,7 @@ Goal:   50 points to reach Level 2
 ## 🔗 Quick Links
 
 - 🎮 [Play Now](https://fabriziosalmi.github.io/enjoy/)
+- 🎤 [Voice Mode](https://fabriziosalmi.github.io/enjoy/voice.html) - No Git needed!
 - 📜 [Rules](LORE.md)
 - 🤝 [How to Contribute](CONTRIBUTING.md)
 - 📈 [Level Roadmap](LEVELS_ROADMAP.md)
