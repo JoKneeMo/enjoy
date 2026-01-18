@@ -62,12 +62,42 @@ jobs:
           script: |
             const prBody = process.env.PR_BODY || '';
             const prAuthor = process.env.PR_AUTHOR || '';
+            const addedFiles = process.env.PR_FILES_ADDED || '';
+            const modifiedFiles = process.env.PR_FILES_MODIFIED || '';
+            const allFiles = `${addedFiles},${modifiedFiles}`.split(',').filter(f => f.trim());
             
             // Skip for bots
             if (prAuthor.includes('bot') || prAuthor === 'dependabot[bot]') {
               core.setOutput('valid_format', 'true');
               core.setOutput('skip_reason', 'bot_allowed');
               console.log('🤖 Bot detected, skipping format check');
+              return;
+            }
+            
+            // Skip for documentation/meta PRs (not game contributions)
+            const docPatterns = [
+              /^README\.md$/i,
+              /^LORE\.md$/i,
+              /^CONTRIBUTING\.md$/i,
+              /^bounties\.md$/i,
+              /^LICENSE$/i,
+              /^\.github\//,
+              /^engine\//,
+              /^docs\//,
+              /^index\.html$/,
+              /^voice\.html$/,
+              /^levels\/.*\.yaml$/
+            ];
+            
+            const isDocPR = allFiles.length > 0 && allFiles.every(file => 
+              docPatterns.some(pattern => pattern.test(file))
+            );
+            
+            if (isDocPR) {
+              core.setOutput('valid_format', 'true');
+              core.setOutput('skip_reason', 'documentation_pr');
+              console.log('📚 Documentation PR detected, skipping game format check');
+              console.log('Files:', allFiles.join(', '));
               return;
             }
             
