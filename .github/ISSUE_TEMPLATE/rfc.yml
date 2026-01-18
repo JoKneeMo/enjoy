@@ -1,0 +1,111 @@
+name: 💡 RFC - Request for Comments
+description: Propose a significant change or new feature for community discussion
+title: "RFC: "
+labels: ["enhancement", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Request for Comments (RFC)
+        
+        RFCs are for **big ideas** that affect the game significantly.
+        
+        Before submitting, please:
+        1. Check if a similar RFC exists
+        2. Consider the impact on existing players
+        3. Think about implementation complexity
+        
+        ---
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 📝 Summary
+      description: One paragraph explaining your proposal
+      placeholder: "I propose adding a system where..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 🎯 Motivation
+      description: Why should we do this? What problem does it solve?
+      placeholder: |
+        - Current pain point: ...
+        - This would improve: ...
+        - Players would benefit by: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: design
+    attributes:
+      label: 🔧 Detailed Design
+      description: How would this work technically?
+      placeholder: |
+        ### Architecture
+        
+        ### Files to modify
+        
+        ### New files needed
+        
+        ### Example implementation
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternatives Considered
+      description: What other approaches did you consider?
+      placeholder: |
+        1. Alternative A: ... (rejected because...)
+        2. Alternative B: ... (rejected because...)
+
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: ⚠️ Potential Drawbacks
+      description: Be honest about risks and downsides
+      placeholder: |
+        - Could increase complexity
+        - Might confuse new players
+        - Requires additional workflows
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: 🔴 Breaking Changes?
+      options:
+        - "No - fully backward compatible"
+        - "Minor - some adjustments needed"
+        - "Yes - requires migration"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: ✅ Pre-submission Checklist
+      options:
+        - label: I've searched for similar RFCs
+          required: true
+        - label: I've read the CONTRIBUTING.md guidelines
+          required: true
+        - label: I'm willing to help implement this
+          required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ### 🗳️ What happens next?
+        
+        1. Community discusses in comments
+        2. Maintainers review after 1 week
+        3. If approved, issue becomes implementation task
+        4. Contributors can claim implementation
+        
+        *Thank you for helping shape enjoy's future!* 💜
