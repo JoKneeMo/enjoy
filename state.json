@@ -208,11 +208,17 @@
         "event": "issues.opened",
         "karma": 5,
         "timestamp": "2026-01-18T15:10:38.637Z"
+      },
+      {
+        "actor": "fabriziosalmi",
+        "event": "issues.opened",
+        "karma": 5,
+        "timestamp": "2026-01-18T15:11:05.217Z"
       }
     ],
     "by_user": {
       "fabriziosalmi": {
-        "total": 25,
+        "total": 30,
         "history": [
           {
             "event": "issues.opened",
@@ -238,6 +244,11 @@
             "event": "issues.opened",
             "karma": 5,
             "timestamp": "2026-01-18T15:10:38.637Z"
+          },
+          {
+            "event": "issues.opened",
+            "karma": 5,
+            "timestamp": "2026-01-18T15:11:05.217Z"
           }
         ]
       }
