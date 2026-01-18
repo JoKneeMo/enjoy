@@ -929,7 +929,6 @@
         
         // Audio toggle button
         const audioToggle = document.getElementById('audioToggle');
-        const audioEnabled = localStorage.getItem('audioEnabled') === 'true';
         
         audioToggle.addEventListener('click', () => {
             const isNowPlaying = AudioSystem.toggle();
@@ -937,16 +936,19 @@
             localStorage.setItem('audioEnabled', isNowPlaying);
         });
         
-        // Restore audio state on user interaction (browser policy)
-        if (audioEnabled) {
-            const enableOnInteraction = () => {
-                AudioSystem.fadeIn();
-                audioToggle.classList.add('active');
-                document.removeEventListener('click', enableOnInteraction);
-                document.removeEventListener('keydown', enableOnInteraction);
+        // Auto-enable audio on first interaction (browser requires user gesture)
+        const audioPreference = localStorage.getItem('audioEnabled');
+        if (audioPreference !== 'false') {
+            // Default: audio ON (enable on first click anywhere)
+            const enableOnFirstInteraction = () => {
+                if (!AudioSystem.isPlaying) {
+                    AudioSystem.fadeIn();
+                    audioToggle.classList.add('active');
+                    localStorage.setItem('audioEnabled', 'true');
+                }
+                document.removeEventListener('click', enableOnFirstInteraction);
             };
-            document.addEventListener('click', enableOnInteraction, { once: true });
-            document.addEventListener('keydown', enableOnInteraction, { once: true });
+            document.addEventListener('click', enableOnFirstInteraction);
         }
         
         // ═══════════════════════════════════════════════════════════════
