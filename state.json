@@ -226,6 +226,12 @@
         "event": "issues.closed",
         "karma": 3,
         "timestamp": "2026-01-18T15:12:21.128Z"
+      },
+      {
+        "actor": "testman42",
+        "event": "watch.started",
+        "karma": 1,
+        "timestamp": "2026-01-18T16:21:29.949Z"
       }
     ],
     "by_user": {
@@ -271,6 +277,16 @@
             "event": "issues.closed",
             "karma": 3,
             "timestamp": "2026-01-18T15:12:21.128Z"
+          }
+        ]
+      },
+      "testman42": {
+        "total": 1,
+        "history": [
+          {
+            "event": "watch.started",
+            "karma": 1,
+            "timestamp": "2026-01-18T16:21:29.949Z"
           }
         ]
       }
