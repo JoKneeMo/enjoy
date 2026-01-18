@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enjoy and contribute! 🎮</title>
+    <meta name="description" content="A GitHub-based game with 100 levels. Play by contributing PRs. Excellent work gets amplified.">
+    <meta property="og:title" content="Enjoy and contribute!">
+    <meta property="og:description" content="The repo is the game. The game is 100 levels. Play through GitHub PRs.">
+    <meta property="og:image" content="https://fabriziosalmi.github.io/enjoy/og-image.png">
+    <meta property="og:url" content="https://fabriziosalmi.github.io/enjoy/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --purple: #a371f7;
+            --gradient: linear-gradient(135deg, #58a6ff 0%, #a371f7 50%, #f778ba 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: 
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 230px 80px, #fff, transparent);
+            background-size: 250px 250px;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(88, 166, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 40px rgba(163, 113, 247, 0.5)); }
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(88, 166, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: rgba(88, 166, 255, 0.1);
+        }
+        
+        /* Stats Grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 4rem 0;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stat-value.level { color: var(--accent); }
+        .stat-value.score { color: var(--success); }
+        .stat-value.karma { color: var(--purple); }
+        .stat-value.contributors { color: var(--warning); }
+        
+        .stat-label {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 4rem 0;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-title {
+            font-size: 1.5rem;
+        }
+        
+        .progress-bar-container {
+            background: var(--bg);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 10px;
+            transition: width 1s ease;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .milestones {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+        
+        .feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        /* Board Preview */
+        .board-section {
+            margin: 4rem 0;
+        }
+        
+        .board-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .board {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .board-empty {
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        .board-empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* How to Play */
+        .how-to-play {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(163, 113, 247, 0.1) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 4rem 0;
+        }
+        
+        .how-to-play h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .step {
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+        
+        .step h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .step p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .sacred-word {
+            font-size: 0.8rem;
+            opacity: 0.3;
+            margin-top: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            header {
+                padding: 2rem 0;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Enjoy and contribute!</h1>
+            <p class="tagline">The repo is the game. The game is 100 levels.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/fabriziosalmi/enjoy" class="btn btn-primary">
+                    🎮 Start Playing
+                </a>
+                <a href="https://github.com/fabriziosalmi/enjoy/blob/main/LORE.md" class="btn btn-secondary">
+                    📜 Read the Lore
+                </a>
+            </div>
+        </header>
+        
+        <!-- Live Stats -->
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-value level" id="level">1</div>
+                <div class="stat-label">Current Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value score" id="score">0</div>
+                <div class="stat-label">Total Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value karma" id="karma">0</div>
+                <div class="stat-label">Global Karma</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value contributors" id="contributors">0</div>
+                <div class="stat-label">Contributors</div>
+            </div>
+        </div>
+        
+        <!-- Progress to Next Level -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">🎯 Progress to Level 2</span>
+                <span id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+            </div>
+            <div class="milestones">
+                <span>Score: <span id="score-progress">0</span>/50</span>
+                <span>PRs: <span id="pr-progress">0</span>/5</span>
+            </div>
+        </div>
+        
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚖️</div>
+                <h3>Karma System</h3>
+                <p>Quality contributions get amplified. Good work = 2x points. Excellent = 3x. The runner rewards creativity.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔗</div>
+                <h3>Referral Chains</h3>
+                <p>Invite friends. When they contribute, you earn karma too. Build chains. Create movements.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📉</div>
+                <h3>Decay System</h3>
+                <p>Stay active or fade away. Karma decays after 7 days. Levels drop after 14. The game keeps you hooked.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🗳️</div>
+                <h3>Community Governance</h3>
+                <p>At higher levels, propose and vote on new rules. Shape the game itself. Democracy in code.</p>
+            </div>
+        </div>
+        
+        <!-- The Board -->
+        <div class="board-section">
+            <h2 class="board-title">🎨 The Living Board</h2>
+            <div class="board" id="board">
+                <div class="board-empty">
+                    <div class="board-empty-icon">🌌</div>
+                    <p>The board awaits its first creation...</p>
+                    <p><a href="https://github.com/fabriziosalmi/enjoy/pulls" style="color: var(--accent)">Be the first to contribute</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How to Play -->
+        <div class="how-to-play">
+            <h2>🚀 How to Play</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Read the Lore</h3>
+                    <p>Find the Sacred Word hidden in the ancient texts. It proves you're human.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Add a Word</h3>
+                    <p>Create a .txt file with one creative word. Fork, commit, open a PR.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Judged</h3>
+                    <p>The Karma system analyzes your contribution. Quality gets amplified.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Level Up</h3>
+                    <p>Accumulate points, unlock new capabilities, climb the leaderboard.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Built with 💜 by the community</p>
+            <p style="margin-top: 0.5rem">
+                <a href="https://github.com/fabriziosalmi/enjoy">GitHub</a> · 
+                <a href="https://github.com/fabriziosalmi/enjoy/blob/main/CONTRIBUTING.md">Contributing</a> · 
+                <a href="https://github.com/fabriziosalmi/enjoy/blob/main/LORE.md">Lore</a>
+            </p>
+            <p class="sacred-word"><!-- The First Guardian is Karmiel --></p>
+        </footer>
+    </div>
+    
+    <script>
+        // Fetch live stats from state.json
+        async function loadStats() {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/fabriziosalmi/enjoy/main/state.json');
+                const state = await response.json();
+                
+                // Update stats
+                document.getElementById('level').textContent = state.levels?.current || 1;
+                document.getElementById('score').textContent = state.score?.total || 0;
+                document.getElementById('karma').textContent = state.karma?.global || 0;
+                
+                // Calculate contributors from players
+                const contributors = Object.keys(state.players || {}).length;
+                document.getElementById('contributors').textContent = contributors;
+                
+                // Update progress
+                const nextLevel = state.levels?.next_unlock || { requires_score: 50, requires_prs: 5, progress: { score: 0, prs: 0 } };
+                const scoreProgress = nextLevel.progress?.score || 0;
+                const prProgress = nextLevel.progress?.prs || 0;
+                
+                document.getElementById('score-progress').textContent = scoreProgress;
+                document.getElementById('pr-progress').textContent = prProgress;
+                
+                const totalProgress = ((scoreProgress / nextLevel.requires_score) + (prProgress / nextLevel.requires_prs)) / 2 * 100;
+                document.getElementById('progress-bar').style.width = totalProgress + '%';
+                document.getElementById('progress-text').textContent = Math.round(totalProgress) + '%';
+                
+                // Render board elements if any
+                if (state.board?.elements?.length > 0) {
+                    renderBoard(state.board.elements);
+                }
+            } catch (e) {
+                console.log('Could not load live stats:', e);
+            }
+        }
+        
+        function renderBoard(elements) {
+            const board = document.getElementById('board');
+            if (elements.length === 0) return;
+            
+            board.innerHTML = '';
+            board.style.padding = '2rem';
+            board.style.flexWrap = 'wrap';
+            board.style.gap = '1rem';
+            board.style.justifyContent = 'flex-start';
+            board.style.alignItems = 'flex-start';
+            
+            elements.forEach(el => {
+                const div = document.createElement('div');
+                div.style.padding = '0.5rem 1rem';
+                div.style.background = 'var(--bg)';
+                div.style.borderRadius = '8px';
+                div.style.fontFamily = "'JetBrains Mono', monospace";
+                div.textContent = el.content || el.word || '?';
+                board.appendChild(div);
+            });
+        }
+        
+        // Load on page load
+        loadStats();
+        
+        // Refresh every 30 seconds
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
