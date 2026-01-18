@@ -333,6 +333,8 @@ Built with 🤖 by Claude & Gemini | Maintained by [@fabriziosalmi](https://gith
 
 21 autonomous workflows • 100 levels • Time-aware karma • Procedural art • Guardian angels
 
+♿ [Accessibility](ACCESSIBILITY.md) • 🌍 [Translations](TRANSLATIONS.md) • 💜 Nobody left behind
+
 </sub>
 
 **⭐ Star this repo if you think GitHub can be fun!**

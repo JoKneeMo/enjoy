@@ -1,21 +1,21 @@
-# 🌍 TRANSLATIONS / TRADUZIONI / 翻訳 / Übersetzungen
+# 🌍 TRANSLATIONS
 
-> **enjoy** parla tutte le lingue. Aiutaci a raggiungere tutti!
+> **enjoy speaks all languages. Help us reach everyone!**
 
 ---
 
-## 🗣️ Lingue Disponibili
+## 🗣️ Available Languages
 
-| Lingua | Status | Maintainer | File |
-|--------|--------|------------|------|
-| 🇬🇧 English | ✅ Complete | @fabriziosalmi | README.md |
-| 🇮🇹 Italiano | ✅ Complete | @fabriziosalmi | README.it.md |
-| 🇪🇸 Español | 🔜 Needed | - | - |
-| 🇫🇷 Français | 🔜 Needed | - | - |
-| 🇩🇪 Deutsch | 🔜 Needed | - | - |
-| 🇵🇹 Português | 🔜 Needed | - | - |
-| 🇯🇵 日本語 | 🔜 Needed | - | - |
-| 🇨🇳 中文 | 🔜 Needed | - | - |
+| Language | Status | Maintainer | File |
+|----------|--------|------------|------|
+| 🇬🇧 English | ✅ Complete | @fabriziosalmi | [README.md](README.md) |
+| 🇮🇹 Italiano | ✅ Complete | @fabriziosalmi | [README.it.md](README.it.md) |
+| 🇪🇸 Español | 🔜 Needed | - | [README.es.md](README.es.md) |
+| 🇫🇷 Français | 🔜 Needed | - | [README.fr.md](README.fr.md) |
+| 🇩🇪 Deutsch | 🔜 Needed | - | [README.de.md](README.de.md) |
+| 🇵🇹 Português | 🔜 Needed | - | [README.pt.md](README.pt.md) |
+| 🇯🇵 日本語 | 🔜 Needed | - | [README.ja.md](README.ja.md) |
+| 🇨🇳 中文 | 🔜 Needed | - | [README.zh.md](README.zh.md) |
 | 🇰🇷 한국어 | 🔜 Needed | - | - |
 | 🇷🇺 Русский | 🔜 Needed | - | - |
 | 🇸🇦 العربية | 🔜 Needed | - | - |
@@ -23,18 +23,18 @@
 
 ---
 
-## 🎯 Come Contribuire una Traduzione
+## 🎯 How to Contribute a Translation
 
-### File da Tradurre (priorità)
+### Files to Translate (priority order)
 
 1. **README.md** → `README.{lang}.md`
 2. **QUICKSTART.md** → `QUICKSTART.{lang}.md`
 3. **CONTRIBUTING.md** → `CONTRIBUTING.{lang}.md`
 4. **MANIFESTO.md** → `MANIFESTO.{lang}.md`
 
-### Codici Lingua
+### Language Codes
 
-Usa i codici ISO 639-1:
+Use ISO 639-1 codes:
 - `it` = Italiano
 - `es` = Español
 - `fr` = Français
@@ -47,93 +47,94 @@ Usa i codici ISO 639-1:
 - `ar` = العربية
 - `hi` = हिन्दी
 
-### Processo
+### Process
 
-1. **Fork** il repository
-2. **Crea** `README.{lang}.md` nella root
-3. **Traduci** mantenendo la struttura
-4. **Mantieni** i link funzionanti
-5. **PR** con titolo: `🌍 Add {Language} translation`
+1. **Fork** the repository
+2. **Create** `README.{lang}.md` in root
+3. **Translate** keeping the structure
+4. **Keep** links working
+5. **PR** with title: `🌍 Add {Language} translation`
 
-### Linee Guida
+### Guidelines
 
-- ✅ Mantieni il tono giocoso e inclusivo
-- ✅ Adatta le espressioni culturalmente (non tradurre letteralmente)
-- ✅ Mantieni i termini tecnici in inglese se non hanno traduzione comune
-- ✅ Usa emoji! 🎮
-- ❌ Non usare traduttori automatici senza revisione
-- ❌ Non cambiare il significato dei concetti chiave
+- ✅ Keep the playful and inclusive tone
+- ✅ Adapt expressions culturally (do not translate literally)
+- ✅ Keep technical terms in English if no common translation exists
+- ✅ Use emoji! 🎮
+- ❌ Do not use automatic translators without review
+- ❌ Do not change the meaning of key concepts
 
-### Termini da Mantenere in Inglese
+### Terms to Keep in English
 
 - GitHub, Pull Request, PR, Issue, Fork, Clone
-- Karma (universale 😊)
+- Karma (universal 😊)
 - Achievement, Badge
 - Workflow, Action
 
-### Termini Adattabili
+### Adaptable Terms
 
-| Inglese | Suggerimento |
-|---------|-------------|
-| "The void" | Adatta al concetto culturale |
-| "Genesis" | Puoi tradurre |
-| "Heartbeat" | Puoi tradurre |
-| "Player" | Adatta (joueur, jugador, etc.) |
-
----
-
-## 🏆 Riconoscimenti
-
-Ogni traduttore riceve:
-- 🎖️ Menzione nel README della lingua
-- ⭐ Badge "Translator" nel gioco
-- 💜 Gratitudine eterna della community
+| English | Suggestion |
+|---------|-----------|
+| "The void" | Adapt to cultural concept |
+| "Genesis" | Can translate |
+| "Heartbeat" | Can translate |
+| "Player" | Adapt (joueur, jugador, etc.) |
 
 ---
 
-## 📝 Template per Nuova Traduzione
+## 🏆 Recognition
+
+Every translator receives:
+- 🎖️ Mention in the language's README
+- ⭐ "Translator" badge in the game
+- 💜 Eternal gratitude from the community
+- ➕ +50 Karma bonus
+
+---
+
+## 📝 Template for New Translation
 
 ```markdown
 # 🎮 enjoy
 
-> [Traduzione del tagline in {lingua}]
+> [Tagline translation in {language}]
 
-[![Gioca Ora](assets/svg/badge-innovative.svg)](https://github.com/fabriziosalmi/enjoy)
+[![Play Now](assets/svg/badge-innovative.svg)](https://github.com/fabriziosalmi/enjoy)
 
-[Il resto del README tradotto...]
+[Rest of translated README...]
 
 ---
 
-## 🌍 [Altre Lingue / Other Languages]
+## 🌍 [Other Languages]
 
 - [English](README.md)
 - [Italiano](README.it.md)
-- [{Tua Lingua}](README.{lang}.md)
+- [{Your Language}](README.{lang}.md)
 
 ---
 
-*Tradotto da @{tuo_username}* 💜
+*Translated by @{your_username}* 💜
 ```
 
 ---
 
-## ❓ Domande?
+## ❓ Questions?
 
-Apri una [Discussion](https://github.com/fabriziosalmi/enjoy/discussions) con tag `translation`!
+Open a [Discussion](https://github.com/fabriziosalmi/enjoy/discussions) with tag `translation`!
 
 ---
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
-║   "One language sets you in a corridor for life.             ║
-║    Two languages open every door along the way."             ║
+║   "One language sets you in a corridor for life.              ║
+║    Two languages open every door along the way."              ║
 ║                                        - Frank Smith          ║
 ║                                                               ║
-║   "100 languages open 100 worlds."                           ║
+║   "100 languages open 100 worlds."                            ║
 ║                                        - enjoy philosophy     ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-**Aiutaci a portare il gioco a tutti.** 🌍💜
+**Help us bring the game to everyone.** 🌍💜

@@ -1,17 +1,17 @@
 # 🔧 HACKER'S GUIDE
 
-> Per chi vuole capire COME funziona, non solo COSA fa.
+> For those who want to understand HOW it works, not just WHAT it does.
 
 ```
-    ╔═══════════════════════════════════════════════════════════════╗
-    ║  "The best way to understand something is to break it."      ║
-    ║  "The best way to fix it is to build it together."           ║
-    ╚═══════════════════════════════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════════════╗
+║  "The best way to understand something is to break it."       ║
+║  "The best way to fix it is to build it together."            ║
+╚═══════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 🧠 Architettura Mentale
+## 🧠 Mental Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -49,88 +49,86 @@
 
 ---
 
-## 🔍 I File Che Contano
+## 🔍 The Files That Matter
 
-### `state.json` - Il Cervello
+### `state.json` - The Brain
 ```json
 {
-  "level": 1,              // Livello attuale del gioco
-  "phase": "foundation",   // Fase corrente (1-5)
-  "totalKarma": 0,         // Karma globale accumulato
-  "totalPRs": 0,           // Numero totale di PR
-  "players": {},           // Mappa player -> stats
-  "board": [],             // Contenuti del gioco
-  "achievements": [],      // Achievement sbloccati
+  "level": 1,              // Current game level
+  "phase": "foundation",   // Current phase (1-5)
+  "totalKarma": 0,         // Accumulated global karma
+  "totalPRs": 0,           // Total number of PRs
+  "players": {},           // Player -> stats map
+  "board": [],             // Game contents
+  "achievements": [],      // Unlocked achievements
   "lastUpdate": "..."      // Timestamp
 }
 ```
 
-**⚠️ IMPORTANTE:** `state.json` ha un **lock di concorrenza**.
-Solo un workflow alla volta può modificarlo.
+**⚠️ IMPORTANT:** `state.json` has a **concurrency lock**.
+Only one workflow at a time can modify it.
 
-### `levels.json` - Le Regole
+### `levels/` - The Rules
+100 JSON files, one per level:
 ```json
 {
-  "1": {
-    "name": "Genesis",
-    "phase": "foundation",
-    "unlockKarma": 0,
-    "rules": {
-      "allowedExtensions": [".txt"],
-      "maxFileSize": 100,
-      "contentPattern": "^[a-zA-Z]{2,20}$"
-    }
+  "name": "Genesis",
+  "phase": "foundation",
+  "unlockKarma": 0,
+  "rules": {
+    "allowedExtensions": [".txt"],
+    "maxFileSize": 100,
+    "contentPattern": "^[a-zA-Z]{2,20}$"
   }
-  // ... 100 livelli
 }
 ```
 
-### `engine/` - Il Motore TypeScript
+### `engine/` - The TypeScript Engine
 ```
 engine/
 ├── src/
-│   ├── validator.ts      # Valida i PR
-│   ├── karma-engine.ts   # Calcola karma
-│   ├── time-system.ts    # Multiplier temporali
-│   ├── board-manager.ts  # Gestisce il board
-│   └── level-engine.ts   # Progressione livelli
-├── dist/                 # Build compilato
+│   ├── validator.ts      # Validates PRs
+│   ├── karma-engine.ts   # Calculates karma
+│   ├── time-system.ts    # Time multipliers
+│   ├── board-manager.ts  # Manages the board
+│   └── level-engine.ts   # Level progression
+├── dist/                 # Compiled build
 └── package.json
 ```
 
 ---
 
-## 🎯 Entry Points per Contribuire
+## 🎯 Entry Points for Contributing
 
-### 🟢 FACILE - Primi Passi
+### 🟢 EASY - First Steps
 
-| Cosa | File | Descrizione |
+| What | File | Description |
 |------|------|-------------|
-| Nuovo livello | `levels.json` | Aggiungi livello 101+ |
-| Nuovo achievement | `achievements.json` | Nuova medaglia |
-| Fix typo | `*.md` | Correzioni testo |
-| Traduzione | `docs/` | Nuova lingua |
+| New level | `levels/` | Add level 101+ |
+| New achievement | `achievements.json` | New badge |
+| Fix typo | `*.md` | Text corrections |
+| Translation | `README.*.md` | New language |
 
-### 🟡 MEDIO - Per Chi Conosce JS/TS
+### 🟡 MEDIUM - For JS/TS Developers
 
-| Cosa | File | Descrizione |
+| What | File | Description |
 |------|------|-------------|
-| Nuova regola validazione | `engine/src/rules/` | Nuovo controllo PR |
-| Nuova arte generativa | `.github/workflows/` | Nuovo SVG generator |
-| Nuovo bot behavior | `engine/src/` | Nuova logica |
-| Performance | `engine/` | Ottimizzazioni |
+| New validation rule | `engine/src/rules/` | New PR check |
+| New generative art | `.github/workflows/` | New SVG generator |
+| New bot behavior | `engine/src/` | New logic |
+| Performance | `engine/` | Optimizations |
 
-### 🔴 AVANZATO - Architetti
+### 🔴 ADVANCED - Architects
 
-| Cosa | File | Descrizione |
+| What | File | Description |
 |------|------|-------------|
-| Nuovo sistema di gioco | `engine/` + `workflows/` | Feature complessa |
-| Nuovo tipo di PR | `validator.ts` | Estensione parser |
-| Meta-gioco | `*` | Gioco che modifica il gioco |
+| New game system | `engine/` + `workflows/` | Complex feature |
+| New PR type | `validator.ts` | Parser extension |
+| Meta-game | `*` | Game that modifies the game |
 
 ---
 
-## 🧪 Come Testare Localmente
+## 🧪 How to Test Locally
 
 ```bash
 # Clone
@@ -142,84 +140,84 @@ cd engine
 npm install
 npm run build
 
-# Esegui tests
+# Run tests
 npm test
 
-# Valida un PR finto
+# Validate a mock PR
 npm run validate -- --mock --content="TESTWORD"
 
-# Simula karma
+# Simulate karma
 npm run karma -- --player="testuser" --action="valid_pr"
 ```
 
 ---
 
-## 🔐 Sicurezza & Limiti
+## 🔐 Security and Limits
 
-### Cosa PUOI fare:
-- ✅ Fork e sperimentare
-- ✅ Proporre nuove regole via Issue
-- ✅ Creare arte generativa
-- ✅ Suggerire ottimizzazioni
-- ✅ Rompere cose nel TUO fork
+### What you CAN do:
+- ✅ Fork and experiment
+- ✅ Propose new rules via Issue
+- ✅ Create generative art
+- ✅ Suggest optimizations
+- ✅ Break things in YOUR fork
 
-### Cosa NON fare:
-- ❌ Exploit del rate limiting
-- ❌ Spam di PR invalidi
-- ❌ Tentativi di code injection
-- ❌ Abuso delle GitHub Actions
-- ❌ Manipolazione diretta di state.json
+### What NOT to do:
+- ❌ Rate limiting exploits
+- ❌ Invalid PR spam
+- ❌ Code injection attempts
+- ❌ GitHub Actions abuse
+- ❌ Direct state.json manipulation
 
-### Rate Limits Rispettati:
-- Max 1 PR ogni 5 minuti per player
+### Rate Limits Respected:
+- Max 1 PR every 5 minutes per player
 - Max 100 API calls per workflow
-- Workflow timeout: 10 minuti
-- Concurrency: 1 per state modification
+- Workflow timeout: 10 minutes
+- Concurrency: 1 for state modifications
 
 ---
 
-## 💡 Idee per Hacker Creativi
+## 💡 Ideas for Creative Hackers
 
-### 1. **Sistema di Alleanze**
-Players che collaborano ottengono bonus.
-→ Modifica `karma-engine.ts`
+### 1. **Alliance System**
+Players who collaborate get bonuses.
+→ Modify `karma-engine.ts`
 
 ### 2. **Seasonal Events**
-Eventi speciali in date specifiche.
-→ Nuovo workflow con cron
+Special events on specific dates.
+→ New workflow with cron
 
 ### 3. **Generative Music**
-Converti lo stato in MIDI/audio.
-→ Nuovo generator workflow
+Convert state to MIDI/audio.
+→ New generator workflow
 
 ### 4. **3D Visualization**
-Three.js viewer del board.
+Three.js board viewer.
 → GitHub Pages component
 
 ### 5. **AI Narrator**
-Bot che racconta la storia in tempo reale.
+Bot that tells the story in real-time.
 → Workflow + LLM API
 
 ### 6. **Cross-Repo Play**
-Altri repo possono "connettersi" a enjoy.
+Other repos can "connect" to enjoy.
 → Webhook system
 
 ---
 
-## 🤝 Come Proporre Cambiamenti Grossi
+## 🤝 How to Propose Big Changes
 
-1. **Apri una Discussion** nella categoria "Ideas"
-2. **Descrivi** cosa vuoi fare e perché
-3. **Aspetta feedback** dalla community
-4. **Se approvato**, apri una Issue "RFC: [nome]"
-5. **Implementa** in un branch
-6. **PR con tests** e documentazione
-7. **Review** collaborativa
+1. **Open a Discussion** in the "Ideas" category
+2. **Describe** what you want to do and why
+3. **Wait for feedback** from community
+4. **If approved**, open an Issue "RFC: [name]"
+5. **Implement** in a branch
+6. **PR with tests** and documentation
+7. **Collaborative review**
 8. **Merge** 🎉
 
 ---
 
-## 📊 Metriche che Monitoriamo
+## 📊 Metrics We Monitor
 
 ```
 ┌────────────────────────────────────────┐
@@ -235,18 +233,18 @@ Altri repo possono "connettersi" a enjoy.
 
 ---
 
-## 🛠️ Tools Consigliati
+## 🛠️ Recommended Tools
 
-- **VS Code** con GitHub Copilot (ovvio 😉)
-- **act** - Testa GitHub Actions localmente
-- **jq** - Manipola JSON da CLI
-- **gh** - GitHub CLI per tutto
+- **VS Code** with GitHub Copilot
+- **act** - Test GitHub Actions locally
+- **jq** - Manipulate JSON from CLI
+- **gh** - GitHub CLI for everything
 
 ```bash
-# Installa act per test locali
+# Install act for local testing
 brew install act
 
-# Esegui workflow localmente
+# Run workflow locally
 act -j validate-pr --secret GITHUB_TOKEN=$GITHUB_TOKEN
 ```
 
@@ -254,10 +252,10 @@ act -j validate-pr --secret GITHUB_TOKEN=$GITHUB_TOKEN
 
 ## 📚 Deep Dives
 
-- [IMPLEMENTATION.md](IMPLEMENTATION.md) - Dettagli tecnici
-- [LEVELS_ROADMAP.md](LEVELS_ROADMAP.md) - I 100 livelli
-- [GAMEPLAY.md](GAMEPLAY.md) - Meccaniche di gioco
-- [engine/README.md](engine/README.md) - Docs motore
+- [IMPLEMENTATION.md](IMPLEMENTATION.md) - Technical details
+- [LEVELS_ROADMAP.md](LEVELS_ROADMAP.md) - The 100 levels
+- [GAMEPLAY.md](GAMEPLAY.md) - Game mechanics
+- [engine/README.md](engine/README.md) - Engine docs
 
 ---
 
@@ -267,8 +265,8 @@ act -j validate-pr --secret GITHUB_TOKEN=$GITHUB_TOKEN
 ║   "First, solve the problem. Then, write the code."           ║
 ║                                        - John Johnson          ║
 ║                                                                ║
-║   "Ma se il problema è che non c'è abbastanza gioco           ║
-║    nel mondo... allora scrivi il gioco."                       ║
+║   "But if the problem is that there is not enough play        ║
+║    in the world... then write the game."                       ║
 ║                                        - enjoy philosophy      ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
@@ -276,6 +274,6 @@ act -j validate-pr --secret GITHUB_TOKEN=$GITHUB_TOKEN
 
 ---
 
-**Ora sai come funziona. Ora puoi migliorarlo.**
+**Now you know how it works. Now you can improve it.**
 
 *Welcome to the source.* 🔧💜

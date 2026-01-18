@@ -1,49 +1,49 @@
 # 🔌 ENJOY PROTOCOL
 
-> **Il layer che trasforma enjoy da gioco a piattaforma.**
+> **The layer that transforms enjoy from game to platform.**
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
-║   "Non stiamo costruendo un gioco.                                        ║
-║    Stiamo costruendo le fondamenta su cui altri costruiranno."            ║
+║   "We are not building a game.                                            ║
+║    We are building the foundation on which others will build."            ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 🌐 Cos'è il Protocollo enjoy?
+## 🌐 What is the enjoy Protocol?
 
-Un **standard aperto** che permette a:
-- 🎮 **Altri giochi** di connettersi a enjoy
-- 🛠️ **Tool e bot** di interagire con lo stato
-- 🎨 **Artisti** di creare asset che vivono nel gioco
-- 🏗️ **Builder** di costruire sopra le nostre fondamenta
+An **open standard** that allows:
+- 🎮 **Other games** to connect to enjoy
+- 🛠️ **Tools and bots** to interact with the state
+- 🎨 **Artists** to create assets that live in the game
+- 🏗️ **Builders** to build on our foundations
 
 ---
 
-## 🔗 Come Funziona
+## 🔗 How It Works
 
 ### 1. State API (Read-Only)
-Qualsiasi repo può leggere lo stato di enjoy:
+Any repo can read enjoy's state:
 
 ```bash
-# Stato corrente del gioco
+# Current game state
 curl https://raw.githubusercontent.com/fabriziosalmi/enjoy/main/state.json
 
-# Lista player
+# Player list
 curl https://raw.githubusercontent.com/fabriziosalmi/enjoy/main/game/players/
 
-# Livello corrente
+# Current level
 curl https://raw.githubusercontent.com/fabriziosalmi/enjoy/main/levels/
 ```
 
 ### 2. Webhook Integration
-I tuoi workflow possono ascoltare eventi di enjoy:
+Your workflows can listen to enjoy events:
 
 ```yaml
-# Nel tuo repo
+# In your repo
 name: React to enjoy
 on:
   repository_dispatch:
@@ -58,10 +58,10 @@ jobs:
 ```
 
 ### 3. Cross-Repo Karma
-Altri progetti possono contribuire karma a enjoy:
+Other projects can contribute karma to enjoy:
 
 ```yaml
-# Nel tuo repo - contribuisci karma quando qualcuno fa qualcosa di buono
+# In your repo - contribute karma when someone does something good
 - name: Send karma to enjoy
   uses: peter-evans/repository-dispatch@v2
   with:
@@ -73,31 +73,31 @@ Altri progetti possono contribuire karma a enjoy:
 
 ---
 
-## 🎨 Per Artisti
+## 🎨 For Artists
 
-### Contribuisci Arte Generativa
+### Contribute Generative Art
 
-1. Crea SVG che reagisce allo stato del gioco:
+1. Create SVG that reacts to game state:
 ```svg
-<!-- Il tuo SVG può leggere variabili di enjoy -->
+<!-- Your SVG can read enjoy variables -->
 <svg data-enjoy-level="LEVEL" data-enjoy-karma="KARMA">
-  <!-- Arte che cambia in base al livello -->
+  <!-- Art that changes based on level -->
 </svg>
 ```
 
-2. Proponi via Issue con label `art`
-3. Se approvato, diventa parte del gioco!
+2. Propose via Issue with label `art`
+3. If approved, it becomes part of the game!
 
-### Galleria Decentralizzata
-La tua arte può vivere nel TUO repo ma essere visibile in enjoy:
+### Decentralized Gallery
+Your art can live in YOUR repo but be visible in enjoy:
 
 ```json
 // game/art/external.json
 {
   "galleries": [
     {
-      "artist": "@tuo_username",
-      "repo": "tuo_username/enjoy-art",
+      "artist": "@your_username",
+      "repo": "your_username/enjoy-art",
       "pieces": ["piece1.svg", "piece2.svg"]
     }
   ]
@@ -106,31 +106,31 @@ La tua arte può vivere nel TUO repo ma essere visibile in enjoy:
 
 ---
 
-## 🛠️ Per Hacker/Builder
+## 🛠️ For Hackers/Builders
 
-### Costruisci Tool che Interagiscono
+### Build Tools That Interact
 
-**Esempi di progetti possibili:**
+**Possible project examples:**
 
-| Progetto | Descrizione |
-|----------|-------------|
-| `enjoy-cli` | CLI per giocare da terminale |
-| `enjoy-dashboard` | Real-time dashboard dello stato |
-| `enjoy-music` | Genera musica dallo stato del gioco |
-| `enjoy-3d` | Visualizzazione 3D del board |
-| `enjoy-mobile` | App mobile per notifiche |
-| `enjoy-discord` | Bot Discord che annuncia eventi |
-| `enjoy-telegram` | Bot Telegram per giocare |
-| `enjoy-vscode` | Estensione VS Code |
+| Project | Description |
+|---------|-------------|
+| `enjoy-cli` | CLI to play from terminal |
+| `enjoy-dashboard` | Real-time state dashboard |
+| `enjoy-music` | Generate music from game state |
+| `enjoy-3d` | 3D board visualization |
+| `enjoy-mobile` | Mobile app for notifications |
+| `enjoy-discord` | Discord bot that announces events |
+| `enjoy-telegram` | Telegram bot to play |
+| `enjoy-vscode` | VS Code extension |
 
-### Schema dello State
+### State Schema
 
 ```typescript
 interface EnjoyState {
   level: number;           // 1-100
   phase: string;           // foundation|complexity|metamorphosis|consciousness|transcendence
-  totalKarma: number;      // Karma globale
-  totalPRs: number;        // PR totali
+  totalKarma: number;      // Global karma
+  totalPRs: number;        // Total PRs
   players: {
     [username: string]: {
       karma: number;
@@ -139,100 +139,100 @@ interface EnjoyState {
       lastActive: string;
     }
   };
-  board: any[];            // Contenuti del gioco
-  lastHeartbeat: string;   // Ultimo pulse
+  board: any[];            // Game contents
+  lastHeartbeat: string;   // Last pulse
 }
 ```
 
 ---
 
-## 🌍 Progetti Satellite
+## 🌍 Satellite Projects
 
-Questi progetti possono "orbitare" intorno a enjoy:
+These projects can "orbit" around enjoy:
 
-### Tier 1: Ufficiali
-Mantenuti dalla community core di enjoy:
-- `enjoy-docs` - Documentazione estesa
-- `enjoy-art` - Galleria ufficiale
-- `enjoy-translations` - Traduzioni in tutte le lingue
+### Tier 1: Official
+Maintained by enjoy core community:
+- `enjoy-docs` - Extended documentation
+- `enjoy-art` - Official gallery
+- `enjoy-translations` - All language translations
 
 ### Tier 2: Community
-Mantenuti dalla community:
-- Tool, bot, visualizzazioni
-- Giochi che usano il protocollo enjoy
-- Integrazioni con altre piattaforme
+Maintained by the community:
+- Tools, bots, visualizations
+- Games using the enjoy protocol
+- Integrations with other platforms
 
-### Tier 3: Sperimentali
-- Fork creativi
-- Mod del gioco
-- Versioni alternative delle regole
-
----
-
-## 📜 Licenza del Protocollo
-
-**MIT** - Fai quello che vuoi, ma:
-1. Non essere cattivo
-2. Dai credit dove è dovuto
-3. Condividi le migliorie
+### Tier 3: Experimental
+- Creative forks
+- Game mods
+- Alternative rule versions
 
 ---
 
-## 🤝 Come Proporre Estensioni al Protocollo
+## 📜 Protocol License
 
-1. Apri una Issue con label `enhancement` + `protocol`
-2. Descrivi l'estensione proposta
-3. Discussione community
-4. Se approvata, diventa parte dello standard
+**MIT** - Do what you want, but:
+1. Do not be evil
+2. Give credit where due
+3. Share improvements
 
 ---
 
-## 🔮 Roadmap del Protocollo
+## 🤝 How to Propose Protocol Extensions
 
-### v0.1 (Ora)
-- [x] State pubblico leggibile
-- [x] Webhook per eventi base
-- [x] Arte esterna linkabile
+1. Open an Issue with labels `enhancement` + `protocol`
+2. Describe the proposed extension
+3. Community discussion
+4. If approved, becomes part of the standard
 
-### v0.2 (Prossimo)
-- [ ] API REST ufficiale
-- [ ] OAuth per azioni cross-repo
-- [ ] Standard per arte generativa
+---
 
-### v0.3 (Futuro)
-- [ ] Federazione tra istanze enjoy
-- [ ] Cross-chain karma (altri "enjoy" su GitLab, etc.)
-- [ ] SDK ufficiale (JS/Python/Go)
+## 🔮 Protocol Roadmap
 
-### v1.0 (Sogno)
-- [ ] enjoy diventa un protocollo, non solo un repo
-- [ ] Chiunque può hostare un'istanza enjoy
-- [ ] Universo interconnesso di giochi collaborativi
+### v0.1 (Now)
+- [x] Publicly readable state
+- [x] Webhooks for basic events
+- [x] External art linkable
+
+### v0.2 (Next)
+- [ ] Official REST API
+- [ ] OAuth for cross-repo actions
+- [ ] Standard for generative art
+
+### v0.3 (Future)
+- [ ] Federation between enjoy instances
+- [ ] Cross-chain karma (other "enjoys" on GitLab, etc.)
+- [ ] Official SDK (JS/Python/Go)
+
+### v1.0 (Dream)
+- [ ] enjoy becomes a protocol, not just a repo
+- [ ] Anyone can host an enjoy instance
+- [ ] Interconnected universe of collaborative games
 
 ---
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
-║   "Un protocollo non è un prodotto.                                       ║
-║    È una promessa."                                                       ║
+║   "A protocol is not a product.                                           ║
+║    It is a promise."                                                      ║
 ║                                                                           ║
-║   "Promettiamo che chiunque può costruire su enjoy.                       ║
-║    Promettiamo che rimarrà aperto per sempre.                             ║
-║    Promettiamo che il gioco è di tutti."                                  ║
+║   "We promise that anyone can build on enjoy.                             ║
+║    We promise it will remain open forever.                                ║
+║    We promise the game belongs to everyone."                              ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 🚀 Inizia Ora
+## 🚀 Start Now
 
-1. **Leggi** lo [state.json](state.json)
-2. **Studia** i [workflow](.github/workflows/)
-3. **Proponi** un progetto satellite
-4. **Costruisci** qualcosa di incredibile
+1. **Read** the [state.json](state.json)
+2. **Study** the [workflows](.github/workflows/)
+3. **Propose** a satellite project
+4. **Build** something incredible
 
-**Il protocollo è aperto. La piattaforma è tua.**
+**The protocol is open. The platform is yours.**
 
-*Cosa costruirai?* 🔌💜
+*What will you build?* 🔌💜
