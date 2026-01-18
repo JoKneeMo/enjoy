@@ -711,6 +711,19 @@
             }
             
             draw() {
+                // Player glow - much more visible
+                if (this.isPlayer) {
+                    // Outer glow
+                    const outerGlow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 6);
+                    outerGlow.addColorStop(0, `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, 0.4)`);
+                    outerGlow.addColorStop(0.5, `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, 0.1)`);
+                    outerGlow.addColorStop(1, 'transparent');
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 6, 0, Math.PI * 2);
+                    ctx.fillStyle = outerGlow;
+                    ctx.fill();
+                }
+                
                 const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 3);
                 gradient.addColorStop(0, `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.alpha * 0.5})`);
                 gradient.addColorStop(1, 'transparent');
@@ -724,6 +737,14 @@
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}%, ${this.lightness}%, ${this.alpha})`;
                 ctx.fill();
+                
+                // Player core - bright center
+                if (this.isPlayer) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${this.hue}, 100%, 80%, 1)`;
+                    ctx.fill();
+                }
             }
         }
         
