@@ -783,16 +783,26 @@
                 .sort((a, b) => (b[1].karma || 0) - (a[1].karma || 0))
                 .slice(0, SCALE_CONFIG.maxVisiblePlayers);
             
-            // Remove players no longer in top N
+            // Get names of top players
             const topNames = new Set(sortedPlayers.map(([name]) => name));
+            
+            // Remove only player particles that are no longer in top N (keep ambient!)
             particles = particles.filter(p => !p.isPlayer || topNames.has(p.name));
             
-            // Add new players
+            // Add new players that aren't already particles
             sortedPlayers.forEach(([name, data]) => {
-                if (!particles.find(p => p.name === name && p.isPlayer)) {
-                    particles.push(new Particle(name, data.karma || 0, true));
+                const exists = particles.some(p => p.name === name && p.isPlayer);
+                if (!exists) {
+                    const newPlayer = new Particle(name, data.karma || 0, true);
+                    particles.push(newPlayer);
+                    console.log('🎮 Added player particle:', name, 'karma:', data.karma);
                 }
             });
+            
+            // Debug log
+            const playerCount = particles.filter(p => p.isPlayer).length;
+            const ambientCount = particles.filter(p => !p.isPlayer).length;
+            console.log(`📊 Particles: ${playerCount} players, ${ambientCount} ambient`);
             
             // Update scale indicator if many players
             const scaleIndicator = document.getElementById('scaleIndicator');
