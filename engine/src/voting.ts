@@ -42,7 +42,7 @@ export function proposeRule(
   
   const canPropose = 
     state.reputation?.top_coders?.includes(playerHash) ||
-    (player.prs_merged >= 50 && (player.reputation || 0) > 50) ||
+    ((player.prs_merged || 0) >= 50 && (player.reputation || 0) > 50) ||
     (player.karma || 0) > 500;
   
   if (!canPropose) {
@@ -132,7 +132,7 @@ export function voteOnProposal(
   
   if (state.reputation?.voting_power?.[playerHash]) {
     votingPower = state.reputation.voting_power[playerHash];  // Top coder power
-  } else if (player.prs_merged >= 10) {
+  } else if ((player.prs_merged || 0) >= 10) {
     votingPower = Math.min(5, Math.floor((player.reputation || 0) / 20));
   }
   

@@ -75,7 +75,7 @@ export function analyzeContributionQuality(pr: PRMetadata, content: string, stat
   // CHECK 6: Player history
   const playerHash = hashAuthor(pr.author);
   const player = state.players[playerHash];
-  if (player && player.prs_merged > 10) {
+  if (player && (player.prs_merged || 0) > 10) {
     score += 5;
     reasons.push('Experienced contributor');
   }
@@ -137,10 +137,14 @@ export function applyKarma(state: GameState, pr: PRMetadata, analysis: KarmaAnal
     state.players[playerHash] = {
       total_prs: 0,
       prs_merged: 0,
+      prs: 0,
       karma: 0,
       reputation: 0,
+      streak: 0,
+      achievements: [],
       contributions: [],
-      last_pr: pr.timestamp
+      last_pr: pr.timestamp,
+      joined: new Date().toISOString()
     };
   }
   
@@ -159,7 +163,7 @@ export function applyKarma(state: GameState, pr: PRMetadata, analysis: KarmaAnal
   }
   
   // Reputation (slower to change, affects voting power)
-  if (player.prs_merged > 10) {
+  if ((player.prs_merged || 0) > 10) {
     player.reputation = (player.reputation || 0) + (analysis.quality_score - 50) / 10;
   }
   
@@ -225,7 +229,7 @@ function updateTopCoders(state: GameState): void {
       hash,
       reputation: player.reputation || 0,
       karma: player.karma || 0,
-      prs: player.prs_merged
+      prs: player.prs_merged || 0
     }))
     .filter(p => p.prs >= 10)  // Min 10 PRs to qualify
     .sort((a, b) => b.reputation - a.reputation)
@@ -265,7 +269,7 @@ export function canProposeRules(state: GameState, playerHash: string): boolean {
   // - Karma > 500
   
   const isTopCoder = state.reputation?.top_coders?.includes(playerHash);
-  const hasExperience = player.prs_merged >= 50 && (player.reputation || 0) > 50;
+  const hasExperience = (player.prs_merged || 0) >= 50 && (player.reputation || 0) > 50;
   const hasKarma = (player.karma || 0) > 500;
   
   return isTopCoder || hasExperience || hasKarma;
@@ -366,9 +370,13 @@ export function applyReferralKarma(
         state.players[inviter] = {
           total_prs: 0,
           prs_merged: 0,
+          prs: 0,
           karma: 0,
           reputation: 0,
-          contributions: []
+          streak: 0,
+          achievements: [],
+          contributions: [],
+          joined: new Date().toISOString()
         };
       }
       state.players[inviter].karma = (state.players[inviter].karma || 0) + referralBonus;
@@ -399,9 +407,13 @@ function propagateChainKarma(state: GameState, player: string, karma: number): v
         state.players[inviter] = {
           total_prs: 0,
           prs_merged: 0,
+          prs: 0,
           karma: 0,
           reputation: 0,
-          contributions: []
+          streak: 0,
+          achievements: [],
+          contributions: [],
+          joined: new Date().toISOString()
         };
       }
       state.players[inviter].karma = (state.players[inviter].karma || 0) + karma;

@@ -1,5 +1,29 @@
 // Type definitions for the enjoy game engine
 
+export interface Player {
+  // Core stats
+  karma: number;
+  prs: number;
+  total_prs?: number;
+  prs_merged?: number;
+  issues?: number;
+  streak: number;
+  achievements: string[];
+  joined: string;
+  
+  // Optional tracking
+  high_quality_count?: number;
+  referrals?: number;
+  bugs_reported?: number;
+  bounties_completed?: number;
+  mystery_boxes?: number;
+  last_contribution?: string;
+  reputation?: number;
+  contributions?: string[];
+  last_pr?: string;
+  name?: string;
+}
+
 export interface Rule {
   id: string;
   name: string;
@@ -73,14 +97,7 @@ export interface GameState {
     height: number;
     elements: BoardElement[];
   };
-  players: Record<string, {
-    total_prs: number;
-    prs_merged: number;
-    karma: number;
-    reputation: number;
-    contributions: string[];
-    last_pr?: string;
-  }>;
+  players: Record<string, Player>;
   karma: {
     global: number;
     threshold_good: number;

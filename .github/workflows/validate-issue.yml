@@ -176,25 +176,29 @@ jobs:
             const karma = '${{ steps.validate.outputs.karma }}';
             const reason = '${{ steps.validate.outputs.karma_reason }}';
             
+            const body = [
+              `## ✅ Welcome to the game, @${context.payload.issue.user.login}!`,
+              '',
+              '🔐 **Proof of Humanity:** Passed',
+              `💎 **Karma Earned:** +${karma}`,
+              '',
+              '**Breakdown:**',
+              ...reason.split(', ').map(r => '- ' + r),
+              '',
+              '---',
+              '',
+              'Your contribution matters! You can also:',
+              '- 🔀 [Open a PR](https://github.com/fabriziosalmi/enjoy) for more karma',
+              '- 🌐 [See the leaderboard](https://fabriziosalmi.github.io/enjoy/)',
+              '',
+              '*"Every voice shapes the organism."* — Karmiel'
+            ].join('\n');
+            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `## ✅ Welcome to the game, @${context.payload.issue.user.login}!
-
-🔐 **Proof of Humanity:** Passed  
-💎 **Karma Earned:** +${karma}
-
-**Breakdown:**
-${reason.split(', ').map(r => '- ' + r).join('\n')}
-
----
-
-Your contribution matters! You can also:
-- 🔀 [Open a PR](https://github.com/fabriziosalmi/enjoy) for more karma
-- 🌐 [See the leaderboard](https://fabriziosalmi.github.io/enjoy/)
-
-*"Every voice shapes the organism."* — Karmiel`
+              body: body
             });
             
             // Add validated label
@@ -224,23 +228,27 @@ Your contribution matters! You can also:
             
             let message = '';
             if (reason === 'not_human') {
-              message = `## ❌ Proof of Humanity Failed
-
-@${context.payload.issue.user.login}, your issue couldn't be validated.
-
-**What went wrong:**
-- The Guardian's name is incorrect or missing
-
-**How to fix:**
-1. Read [LORE.md](https://github.com/fabriziosalmi/enjoy/blob/main/LORE.md) carefully
-2. Look for a quote at the bottom...
-3. Edit this issue with the correct answer
-
-*"Only those who seek shall find."* — ???`;
+              message = [
+                '## ❌ Proof of Humanity Failed',
+                '',
+                `@${context.payload.issue.user.login}, your issue couldn't be validated.`,
+                '',
+                '**What went wrong:**',
+                '- The Guardian\'s name is incorrect or missing',
+                '',
+                '**How to fix:**',
+                '1. Read [LORE.md](https://github.com/fabriziosalmi/enjoy/blob/main/LORE.md) carefully',
+                '2. Look for a quote at the bottom...',
+                '3. Edit this issue with the correct answer',
+                '',
+                '*"Only those who seek shall find."* — ???'
+              ].join('\n');
             } else {
-              message = `## 🤖 Bot Detected
-
-This issue appears to be from a bot. No karma awarded.`;
+              message = [
+                '## 🤖 Bot Detected',
+                '',
+                'This issue appears to be from a bot. No karma awarded.'
+              ].join('\n');
             }
             
             await github.rest.issues.createComment({
@@ -250,7 +258,6 @@ This issue appears to be from a bot. No karma awarded.`;
               body: message
             });
             
-            // Add invalid label
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,

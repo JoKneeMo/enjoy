@@ -219,9 +219,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Among first 10 contributors',
     karma_reward: 100,
     check: (p, s) => {
-      const players = Object.keys(s.players || {});
-      const index = players.indexOf(p.name || '');
-      return index >= 0 && index < 10;
+      // Check if total players < 10 means this could be an OG
+      return Object.keys(s.players || {}).length <= 10;
     }
   },
   {
