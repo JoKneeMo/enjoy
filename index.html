@@ -291,6 +291,68 @@
             opacity: 0.5;
         }
         
+        /* Live Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .live-indicator {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 1000;
+        }
+        
+        .live-notification {
+            position: fixed;
+            top: 4rem;
+            right: 1rem;
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s;
+            z-index: 1001;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse-bg {
+            0% { box-shadow: inset 0 0 0 0 rgba(88, 166, 255, 0); }
+            50% { box-shadow: inset 0 0 100px 50px rgba(88, 166, 255, 0.1); }
+            100% { box-shadow: inset 0 0 0 0 rgba(88, 166, 255, 0); }
+        }
+        
+        .last-pr-badge {
+            display: none;
+            background: var(--surface);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-left: 1rem;
+        }
+
         /* How to Play */
         .how-to-play {
             background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(163, 113, 247, 0.1) 100%);
@@ -376,6 +438,7 @@
 </head>
 <body>
     <div class="stars"></div>
+    <div class="live-indicator"><span id="live-indicator">● LIVE</span> <span id="last-pr" class="last-pr-badge"></span></div>
     
     <div class="container">
         <header>
@@ -454,10 +517,11 @@
         <div class="board-section">
             <h2 class="board-title">🎨 The Living Board</h2>
             <div class="board" id="board">
-                <div class="board-empty">
+                <canvas id="particle-canvas"></canvas>
+                <div class="board-empty" id="board-empty">
                     <div class="board-empty-icon">🌌</div>
-                    <p>The board awaits its first creation...</p>
-                    <p><a href="https://github.com/fabriziosalmi/enjoy/pulls" style="color: var(--accent)">Be the first to contribute</a></p>
+                    <p>Watching for contributions...</p>
+                    <p><a href="https://github.com/fabriziosalmi/enjoy/pulls" style="color: var(--accent)">Be part of the universe</a></p>
                 </div>
             </div>
         </div>
@@ -501,20 +565,35 @@
     </div>
     
     <script>
-        // Fetch live stats from state.json
+        // ═══════════════════════════════════════════════════════════════
+        // LIVE GAME STATE - Polls every 5 seconds for real-time feel
+        // ═══════════════════════════════════════════════════════════════
+        
+        let previousState = null;
+        let lastUpdate = Date.now();
+        
         async function loadStats() {
             try {
-                const response = await fetch('https://raw.githubusercontent.com/fabriziosalmi/enjoy/main/state.json');
+                // Add cache buster for fresher data
+                const response = await fetch('https://raw.githubusercontent.com/fabriziosalmi/enjoy/main/state.json?' + Date.now());
                 const state = await response.json();
                 
-                // Update stats
-                document.getElementById('level').textContent = state.levels?.current || 1;
-                document.getElementById('score').textContent = state.score?.total || 0;
-                document.getElementById('karma').textContent = state.karma?.global || 0;
+                // Detect changes
+                const changed = detectChanges(previousState, state);
+                if (changed) {
+                    triggerPulse();
+                    showNotification(changed);
+                }
+                previousState = JSON.parse(JSON.stringify(state));
+                lastUpdate = Date.now();
                 
-                // Calculate contributors from players
+                // Update stats with animation
+                animateValue('level', state.levels?.current || 1);
+                animateValue('score', state.score?.total || 0);
+                animateValue('karma', state.karma?.global || 0);
+                
                 const contributors = Object.keys(state.players || {}).length;
-                document.getElementById('contributors').textContent = contributors;
+                animateValue('contributors', contributors);
                 
                 // Update progress
                 const nextLevel = state.levels?.next_unlock || { requires_score: 50, requires_prs: 5, progress: { score: 0, prs: 0 } };
@@ -525,45 +604,171 @@
                 document.getElementById('pr-progress').textContent = prProgress;
                 
                 const totalProgress = ((scoreProgress / nextLevel.requires_score) + (prProgress / nextLevel.requires_prs)) / 2 * 100;
-                document.getElementById('progress-bar').style.width = totalProgress + '%';
+                document.getElementById('progress-bar').style.width = Math.min(totalProgress, 100) + '%';
                 document.getElementById('progress-text').textContent = Math.round(totalProgress) + '%';
                 
-                // Render board elements if any
-                if (state.board?.elements?.length > 0) {
-                    renderBoard(state.board.elements);
+                // Update last PR badge
+                if (state.last_pr) {
+                    document.getElementById('last-pr').textContent = state.last_pr;
+                    document.getElementById('last-pr').style.display = 'inline';
                 }
+                
+                // Render particles for players
+                renderParticles(state.players || {});
+                
             } catch (e) {
-                console.log('Could not load live stats:', e);
+                console.log('Polling...', e.message);
             }
+            
+            updateTimestamp();
         }
         
-        function renderBoard(elements) {
+        function detectChanges(prev, curr) {
+            if (!prev) return null;
+            if (prev.score?.total !== curr.score?.total) return '🎯 Score changed!';
+            if (prev.levels?.current !== curr.levels?.current) return '🎉 LEVEL UP!';
+            if (prev.meta?.total_prs !== curr.meta?.total_prs) return '📥 New PR merged!';
+            if (Object.keys(prev.players || {}).length !== Object.keys(curr.players || {}).length) return '👤 New player joined!';
+            return null;
+        }
+        
+        function animateValue(id, newValue) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const oldValue = parseInt(el.textContent) || 0;
+            if (oldValue === newValue) return;
+            
+            el.style.transform = 'scale(1.2)';
+            el.style.transition = 'transform 0.3s ease';
+            setTimeout(() => {
+                el.textContent = newValue;
+                el.style.transform = 'scale(1)';
+            }, 150);
+        }
+        
+        function triggerPulse() {
+            document.body.style.animation = 'none';
+            document.body.offsetHeight; // Trigger reflow
+            document.body.style.animation = 'pulse-bg 0.5s ease';
+        }
+        
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.className = 'live-notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+        
+        function updateTimestamp() {
+            const el = document.getElementById('live-indicator');
+            if (!el) return;
+            const seconds = Math.floor((Date.now() - lastUpdate) / 1000);
+            el.textContent = seconds < 5 ? '● LIVE' : `● ${seconds}s ago`;
+            el.style.color = seconds < 10 ? 'var(--success)' : 'var(--warning)';
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // PARTICLE SYSTEM - Visualize players as floating particles
+        // ═══════════════════════════════════════════════════════════════
+        
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas?.getContext('2d');
+        let particles = [];
+        
+        function resizeCanvas() {
+            if (!canvas) return;
             const board = document.getElementById('board');
-            if (elements.length === 0) return;
+            canvas.width = board.offsetWidth;
+            canvas.height = board.offsetHeight;
+        }
+        
+        function renderParticles(players) {
+            if (!ctx) return;
             
-            board.innerHTML = '';
-            board.style.padding = '2rem';
-            board.style.flexWrap = 'wrap';
-            board.style.gap = '1rem';
-            board.style.justifyContent = 'flex-start';
-            board.style.alignItems = 'flex-start';
+            const playerList = Object.entries(players);
             
-            elements.forEach(el => {
-                const div = document.createElement('div');
-                div.style.padding = '0.5rem 1rem';
-                div.style.background = 'var(--bg)';
-                div.style.borderRadius = '8px';
-                div.style.fontFamily = "'JetBrains Mono', monospace";
-                div.textContent = el.content || el.word || '?';
-                board.appendChild(div);
+            // Create particles for each player
+            while (particles.length < playerList.length) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    radius: 5 + Math.random() * 10,
+                    hue: Math.random() * 360
+                });
+            }
+            
+            // Update particle labels
+            particles.forEach((p, i) => {
+                if (playerList[i]) {
+                    p.label = playerList[i][0];
+                    p.karma = playerList[i][1].karma || 0;
+                    p.radius = 5 + Math.min(p.karma / 5, 20);
+                }
             });
         }
         
-        // Load on page load
-        loadStats();
+        function animateParticles() {
+            if (!ctx) return requestAnimationFrame(animateParticles);
+            
+            ctx.fillStyle = 'rgba(13, 17, 23, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                // Move
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // Bounce
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                // Draw
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${p.hue}, 70%, 60%, 0.8)`;
+                ctx.fill();
+                
+                // Label
+                if (p.label) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '10px Space Grotesk';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(p.label, p.x, p.y + p.radius + 12);
+                }
+            });
+            
+            // Draw connections
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animateParticles);
+        }
         
-        // Refresh every 30 seconds
-        setInterval(loadStats, 30000);
+        // Initialize
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        loadStats();
+        animateParticles();
+        
+        // Poll every 5 seconds for live feel
+        setInterval(loadStats, 5000);
+        setInterval(updateTimestamp, 1000);
     </script>
 </body>
 </html>
