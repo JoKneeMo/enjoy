@@ -615,29 +615,7 @@
             el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
         });
         
-        // Mode Toggle
-        const modeButtons = document.querySelectorAll('.mode-btn');
-        
-        function setMode(newMode) {
-            mode = newMode;
-            localStorage.setItem('mode', mode);
-            document.body.className = mode;
-            modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-            initParticles();
-            
-            if (mode === 'hardcore') {
-                document.getElementById('challengeBanner').classList.add('visible');
-                triggerGlitch();
-            } else {
-                document.getElementById('challengeBanner').classList.remove('visible');
-            }
-            logEvent('system', `Mode: ${mode.toUpperCase()}`);
-        }
-        
-        modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
-        setMode(mode);
-        
-        // Particle System
+        // Particle System (defined first to avoid hoisting issues)
         class Particle {
             constructor(name, karma, isPlayer = false) {
                 this.name = name;
@@ -769,6 +747,28 @@
         
         initParticles();
         animate(0);
+        
+        // Mode Toggle (must be after Particle class and initParticles)
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        
+        function setMode(newMode) {
+            mode = newMode;
+            localStorage.setItem('mode', mode);
+            document.body.className = mode;
+            modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+            initParticles();
+            
+            if (mode === 'hardcore') {
+                document.getElementById('challengeBanner').classList.add('visible');
+                triggerGlitch();
+            } else {
+                document.getElementById('challengeBanner').classList.remove('visible');
+            }
+            logEvent('system', `Mode: ${mode.toUpperCase()}`);
+        }
+        
+        modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+        setMode(mode);
         
         // Audio System
         const AudioSystem = {
