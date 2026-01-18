@@ -383,6 +383,9 @@
         .live-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: live-pulse 2s ease-in-out infinite; }
         @keyframes live-pulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
         
+        /* Scale Indicator */
+        .scale-indicator { position: fixed; top: 50%; left: 1rem; transform: translateY(-50%); font-size: 0.55rem; color: var(--text-muted); letter-spacing: 0.05em; opacity: 0; transition: opacity 0.5s ease; z-index: 50; writing-mode: vertical-rl; text-orientation: mixed; }
+        
         /* Footer */
         .footer-links { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 1rem; font-size: 0.55rem; letter-spacing: 0.1em; z-index: 100; }
         .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
@@ -583,6 +586,8 @@
         <span>live</span>
     </div>
     
+    <div class="scale-indicator" id="scaleIndicator"></div>
+    
     <div class="mystery-popup" id="mysteryPopup">
         <div class="mystery-emoji" id="mysteryEmoji">🎁</div>
         <div class="mystery-title" id="mysteryTitle">Mystery Box!</div>
@@ -757,30 +762,68 @@
             }
         }
         
+        // ═══════════════════════════════════════════════════════════
+        // SCALING CONFIGURATION - Adjust for viral growth
+        // ═══════════════════════════════════════════════════════════
+        const SCALE_CONFIG = {
+            maxVisiblePlayers: 50,      // Max player particles to render
+            maxConnections: 100,        // Max connection lines
+            connectionDistance: 150,    // Reduce from 200 for performance
+            ambientParticles: 8,        // Background particles
+            topPlayersMode: 'karma',    // 'karma' or 'recent'
+        };
+        
         function syncPlayersToParticles(players) {
             if (!players) return;
-            Object.entries(players).forEach(([name, data]) => {
+            
+            const totalPlayers = Object.keys(players).length;
+            
+            // Sort players by karma (top performers get rendered)
+            const sortedPlayers = Object.entries(players)
+                .sort((a, b) => (b[1].karma || 0) - (a[1].karma || 0))
+                .slice(0, SCALE_CONFIG.maxVisiblePlayers);
+            
+            // Remove players no longer in top N
+            const topNames = new Set(sortedPlayers.map(([name]) => name));
+            particles = particles.filter(p => !p.isPlayer || topNames.has(p.name));
+            
+            // Add new players
+            sortedPlayers.forEach(([name, data]) => {
                 if (!particles.find(p => p.name === name && p.isPlayer)) {
                     particles.push(new Particle(name, data.karma || 0, true));
                 }
             });
+            
+            // Update scale indicator if many players
+            const scaleIndicator = document.getElementById('scaleIndicator');
+            if (scaleIndicator) {
+                if (totalPlayers > SCALE_CONFIG.maxVisiblePlayers) {
+                    scaleIndicator.textContent = `Showing top ${SCALE_CONFIG.maxVisiblePlayers} of ${totalPlayers} souls`;
+                    scaleIndicator.style.opacity = '0.6';
+                } else {
+                    scaleIndicator.style.opacity = '0';
+                }
+            }
         }
         
         function drawConnections() {
             const playerParticles = particles.filter(p => p.isPlayer);
-            for (let i = 0; i < playerParticles.length; i++) {
-                for (let j = i + 1; j < playerParticles.length; j++) {
+            let connectionCount = 0;
+            
+            for (let i = 0; i < playerParticles.length && connectionCount < SCALE_CONFIG.maxConnections; i++) {
+                for (let j = i + 1; j < playerParticles.length && connectionCount < SCALE_CONFIG.maxConnections; j++) {
                     const dx = playerParticles[i].x - playerParticles[j].x;
                     const dy = playerParticles[i].y - playerParticles[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200) {
-                        const alpha = (1 - dist / 200) * 0.15;
+                    if (dist < SCALE_CONFIG.connectionDistance) {
+                        const alpha = (1 - dist / SCALE_CONFIG.connectionDistance) * 0.15;
                         ctx.beginPath();
                         ctx.moveTo(playerParticles[i].x, playerParticles[i].y);
                         ctx.lineTo(playerParticles[j].x, playerParticles[j].y);
                         ctx.strokeStyle = `rgba(99, 102, 241, ${alpha})`;
                         ctx.lineWidth = 1;
                         ctx.stroke();
+                        connectionCount++;
                     }
                 }
             }
