@@ -1,0 +1,131 @@
+name: Update Leaderboard Issue
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:
+  push:
+    paths:
+      - 'game/players/**'
+      - 'game/state.json'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update-leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate Leaderboard
+        id: leaderboard
+        run: |
+          echo "Generating leaderboard..."
+          
+          # Read game state
+          LEVEL=$(cat game/state.json | jq -r '.level // 1')
+          KARMA=$(cat game/state.json | jq -r '.karma // 0')
+          
+          # Count players
+          PLAYER_COUNT=$(ls game/players/*.json 2>/dev/null | wc -l | tr -d ' ')
+          
+          # Build player rankings
+          RANKINGS=""
+          RANK=1
+          
+          for player_file in game/players/*.json; do
+            if [ -f "$player_file" ]; then
+              NAME=$(jq -r '.name // "Unknown"' "$player_file")
+              PKARMA=$(jq -r '.karma // 0' "$player_file")
+              STREAK=$(jq -r '.streak_days // 0' "$player_file")
+              ACHIEVEMENTS=$(jq -r '.achievements | length // 0' "$player_file")
+              
+              # Add to rankings with emoji
+              if [ $RANK -eq 1 ]; then
+                RANKINGS="$RANKINGS| 🥇 | $NAME | $PKARMA | $STREAK | $ACHIEVEMENTS |\n"
+              elif [ $RANK -eq 2 ]; then
+                RANKINGS="$RANKINGS| 🥈 | $NAME | $PKARMA | $STREAK | $ACHIEVEMENTS |\n"
+              elif [ $RANK -eq 3 ]; then
+                RANKINGS="$RANKINGS| 🥉 | $NAME | $PKARMA | $STREAK | $ACHIEVEMENTS |\n"
+              else
+                RANKINGS="$RANKINGS| $RANK | $NAME | $PKARMA | $STREAK | $ACHIEVEMENTS |\n"
+              fi
+              
+              RANK=$((RANK + 1))
+              
+              # Max 10 players
+              if [ $RANK -gt 10 ]; then
+                break
+              fi
+            fi
+          done
+          
+          # Build founders list
+          FOUNDERS=""
+          FNUM=1
+          for player_file in game/players/*.json; do
+            if [ -f "$player_file" ]; then
+              NAME=$(jq -r '.name // "Unknown"' "$player_file")
+              JOINED=$(jq -r '.joined // "Unknown"' "$player_file")
+              FOUNDERS="$FOUNDERS| $FNUM | $NAME | $JOINED |\n"
+              FNUM=$((FNUM + 1))
+              if [ $FNUM -gt 50 ]; then
+                break
+              fi
+            fi
+          done
+          
+          # Create issue body
+          cat << 'BODY' > leaderboard.md
+          # 📊 Live Leaderboard
+          
+          *Auto-updated by GitHub Actions*
+          
+          ## Top Players by Karma
+          
+          | Rank | Player | Karma | Streak | Achievements |
+          |------|--------|-------|--------|--------------|
+          BODY
+          
+          echo -e "$RANKINGS" >> leaderboard.md
+          
+          cat << 'BODY2' >> leaderboard.md
+          
+          ## Founders Hall of Fame
+          
+          *First 50 players to join receive the eternal FOUNDER badge*
+          
+          | # | Founder | Joined |
+          |---|---------|--------|
+          BODY2
+          
+          echo -e "$FOUNDERS" >> leaderboard.md
+          
+          cat << BODY3 >> leaderboard.md
+          
+          ---
+          
+          ## Game Stats
+          
+          - **Total Players**: $PLAYER_COUNT
+          - **Total Karma**: $KARMA
+          - **Current Level**: $LEVEL
+          
+          ---
+          
+          *Last updated: $(date -u '+%Y-%m-%d %H:%M UTC')*
+          
+          **Want to be on this board?** [Start here](https://github.com/${{ github.repository }}/issues/7)
+          BODY3
+          
+          echo "leaderboard_file=leaderboard.md" >> $GITHUB_OUTPUT
+      
+      - name: Update Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Update issue #9 (leaderboard)
+          gh issue edit 9 --body-file leaderboard.md --repo ${{ github.repository }}
+          echo "✓ Leaderboard updated!"

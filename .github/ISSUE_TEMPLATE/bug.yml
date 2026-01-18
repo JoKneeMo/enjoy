@@ -1,0 +1,82 @@
+name: 🐛 Bug Report
+description: Something not working? Let us know!
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Found a Bug?
+        
+        Don't worry! Bugs are just features waiting to be discovered.
+        Help us squash it by filling out this form.
+        
+        **Bonus:** Bug reporters can earn the "Bug Hunter" bounty! 🏆
+        
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug in detail
+      placeholder: "When I tried to... this happened instead of..."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+      description: What did you expect to happen?
+      placeholder: "I expected..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did this happen?
+      description: Which part of enjoy is affected?
+      options:
+        - 🎮 PR validation
+        - 🤖 Auto-merge bot
+        - 📊 Karma calculation
+        - 🏆 Achievements
+        - 🎨 Art generation
+        - 📜 Story generation
+        - 💜 Guardian Angel
+        - 🧬 Entropy tracker
+        - ⏰ Time system
+        - 🌐 GitHub Pages / Website
+        - 📖 Documentation
+        - 🔧 Other
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce the bug?
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error
+    validations:
+      required: false
+      
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any other details? Screenshots? PR links?
+      placeholder: "Here's more info..."
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: bounty
+    attributes:
+      label: Claim Bug Hunter bounty?
+      description: First valid bug report earns +50 karma!
+      options:
+        - label: Yes, I want to claim the Bug Hunter bounty if this is valid!

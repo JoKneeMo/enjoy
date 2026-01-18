@@ -1,0 +1,61 @@
+name: ⏰ Time Capsule
+description: Send a message to the future!
+title: "[TIME CAPSULE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⏰ Create a Time Capsule
+        
+        Send a message to the future! Your capsule will be sealed and opened
+        on the date you specify. We'll compare the game state then vs now.
+        
+        *"What will you say to the future? The past is listening."*
+        
+  - type: input
+    id: capsule-name
+    attributes:
+      label: Capsule Name
+      description: Give your time capsule a unique name
+      placeholder: "my-hopeful-message"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: message
+    attributes:
+      label: Your Message to the Future
+      description: What do you want to tell the future community?
+      placeholder: "Dear future players..."
+    validations:
+      required: true
+      
+  - type: input
+    id: open-date
+    attributes:
+      label: When should this capsule open?
+      description: "Format: YYYY-MM-DD (must be at least 30 days from now)"
+      placeholder: "2026-06-18"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: prediction
+    attributes:
+      label: Your Prediction (optional)
+      description: What do you think enjoy will look like when this opens?
+      placeholder: "I predict that by then we'll have..."
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      description: Please confirm
+      options:
+        - label: I understand my message will be public when the capsule opens
+          required: true
+        - label: I understand the date must be at least 30 days from now
+          required: true

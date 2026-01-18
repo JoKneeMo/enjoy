@@ -1,0 +1,156 @@
+# 👋 WELCOME BOT
+# Automatically welcomes new contributors and creates celebration issues
+
+name: 👋 Welcome New Players
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  welcome-new-contributor:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Check if First Contribution
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const creator = context.payload.sender.login;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // Check for previous PRs
+            const { data: prs } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
+            
+            const previousPRs = prs.filter(pr => pr.user.login === creator);
+            
+            // Check for previous issues
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'all',
+              creator: creator,
+              per_page: 100
+            });
+            
+            const isFirstPR = context.eventName === 'pull_request_target' && previousPRs.length <= 1;
+            const isFirstIssue = context.eventName === 'issues' && issues.length <= 1;
+            const isFirst = isFirstPR || isFirstIssue;
+            
+            core.setOutput('is_first', isFirst);
+            core.setOutput('username', creator);
+            core.setOutput('event_type', context.eventName);
+            
+            console.log(`User: ${creator}, First contribution: ${isFirst}`);
+            
+      - name: 💜 Welcome First-Time Contributor
+        if: steps.check.outputs.is_first == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const username = '${{ steps.check.outputs.username }}';
+            const eventType = '${{ steps.check.outputs.event_type }}';
+            const number = context.issue.number || context.payload.pull_request.number;
+            
+            let welcomeMessage;
+            
+            if (eventType === 'pull_request_target') {
+              welcomeMessage = `## 🎉 Welcome to enjoy, @${username}!
+              
+            You just made your **first contribution**! The void recognizes you.
+            
+            ### What happens now?
+            
+            1. 🤖 Our bot will validate your PR
+            2. ✅ If valid, it auto-merges within minutes
+            3. 💜 You earn karma and join the leaderboard!
+            4. 🌟 **FOUNDER badge** - You're one of the first 50 players!
+            
+            ### Your Powers
+            
+            - 🎮 Play all 100 levels
+            - 🏆 Unlock achievements
+            - 💰 Claim bounties
+            - 🎨 Influence generative art
+            - 📜 Become part of the eternal story
+            
+            ---
+            
+            *Welcome to the collective. The entropy fears your arrival.* 💜
+            
+            — The enjoy community & bot`;
+            } else {
+              welcomeMessage = `## 👋 Welcome to the community, @${username}!
+              
+            Thanks for opening your first issue! We're glad you're here.
+            
+            ### Quick Links
+            
+            - 🎮 [Start playing](https://github.com/fabriziosalmi/enjoy/fork)
+            - 📖 [How to play](https://github.com/fabriziosalmi/enjoy#-how-it-works-30-seconds)
+            - 💬 [Discussions](https://github.com/fabriziosalmi/enjoy/discussions)
+            - 📜 [The Manifesto](https://github.com/fabriziosalmi/enjoy/blob/main/MANIFESTO.md)
+            
+            We'll respond to your issue soon! 💜`;
+            }
+            
+            // Post welcome comment
+            if (eventType === 'pull_request_target') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: number,
+                body: welcomeMessage
+              });
+              
+              // Add welcome label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: number,
+                labels: ['welcome']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: number,
+                body: welcomeMessage
+              });
+            }
+            
+      - name: 🏆 Check for Milestone Players
+        if: github.event_name == 'pull_request_target'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const state = JSON.parse(fs.readFileSync('state.json', 'utf8'));
+            const playerCount = state.meta.total_players;
+            
+            // Check for milestone numbers
+            const milestones = [10, 25, 50, 100, 250, 500, 1000];
+            
+            for (const milestone of milestones) {
+              if (playerCount === milestone - 1) {
+                // Next player will hit milestone!
+                console.log(`🎉 Player ${playerCount + 1} will be milestone #${milestone}!`);
+                
+                // Could create a celebration issue here
+              }
+            }

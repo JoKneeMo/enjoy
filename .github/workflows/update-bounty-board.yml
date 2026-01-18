@@ -1,0 +1,114 @@
+name: Update Bounty Board
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+  issues:
+    types: [opened, labeled, closed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update-bounty-board:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate Bounty Board
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Scanning for bounties..."
+          
+          # Get all issues with bounty label
+          BOUNTIES=$(gh issue list --label "bounty" --state open --json number,title,labels --repo ${{ github.repository }})
+          CLOSED_BOUNTIES=$(gh issue list --label "bounty" --state closed --json number,title,assignees --limit 10 --repo ${{ github.repository }})
+          
+          # Count bounties
+          OPEN_COUNT=$(echo "$BOUNTIES" | jq 'length')
+          
+          # Build open bounties table
+          OPEN_TABLE=""
+          echo "$BOUNTIES" | jq -c '.[]' | while read bounty; do
+            NUM=$(echo "$bounty" | jq -r '.number')
+            TITLE=$(echo "$bounty" | jq -r '.title')
+            OPEN_TABLE="$OPEN_TABLE| [#$NUM](https://github.com/${{ github.repository }}/issues/$NUM) | $TITLE | Open |\n"
+          done
+          
+          # Build closed bounties table
+          CLOSED_TABLE=""
+          echo "$CLOSED_BOUNTIES" | jq -c '.[]' | while read bounty; do
+            NUM=$(echo "$bounty" | jq -r '.number')
+            TITLE=$(echo "$bounty" | jq -r '.title')
+            HUNTER=$(echo "$bounty" | jq -r '.assignees[0].login // "Unknown"')
+            CLOSED_TABLE="$CLOSED_TABLE| [#$NUM](https://github.com/${{ github.repository }}/issues/$NUM) | $HUNTER | ✓ Claimed |\n"
+          done
+          
+          # Create issue body
+          cat << EOF > bounty_board.md
+          # 🏆 Active Bounties
+          
+          Track open bounties and claim your karma!
+          
+          ## How Bounties Work
+          
+          1. Find an issue with the \`bounty\` label
+          2. Comment "Claiming this bounty"
+          3. Submit a PR that fixes the issue
+          4. Earn bonus karma!
+          
+          ## Bounty Values
+          
+          | Difficulty | Bonus Karma |
+          |------------|-------------|
+          | Easy | +10 |
+          | Medium | +25 |
+          | Hard | +50 |
+          | Epic | +100 |
+          
+          ## Current Bounties ($OPEN_COUNT open)
+          
+          | Issue | Title | Status |
+          |-------|-------|--------|
+          EOF
+          
+          if [ "$OPEN_COUNT" -eq "0" ]; then
+            echo "| *No active bounties* | - | - |" >> bounty_board.md
+          else
+            echo "$BOUNTIES" | jq -r '.[] | "| [#\(.number)](https://github.com/${{ github.repository }}/issues/\(.number)) | \(.title) | 🟢 Open |"' >> bounty_board.md
+          fi
+          
+          cat << 'EOF2' >> bounty_board.md
+          
+          ## Recently Claimed
+          
+          | Bounty | Hunter | Status |
+          |--------|--------|--------|
+          EOF2
+          
+          CLOSED_COUNT=$(echo "$CLOSED_BOUNTIES" | jq 'length')
+          if [ "$CLOSED_COUNT" -eq "0" ]; then
+            echo "| *None yet* | - | - |" >> bounty_board.md
+          else
+            echo "$CLOSED_BOUNTIES" | jq -r '.[] | "| [#\(.number)](https://github.com/${{ github.repository }}/issues/\(.number)) | \(.assignees[0].login // "Hero") | ✓ |"' >> bounty_board.md
+          fi
+          
+          cat << EOF3 >> bounty_board.md
+          
+          ---
+          
+          *Last updated: $(date -u '+%Y-%m-%d %H:%M UTC')*
+          
+          *The hunt is on. Choose your target wisely.*
+          
+          ---
+          
+          **Create a bounty**: Open an issue and add the \`bounty\` label!
+          EOF3
+          
+          # Update the bounty board issue (#8)
+          gh issue edit 8 --body-file bounty_board.md --repo ${{ github.repository }}
+          echo "✓ Bounty board updated!"

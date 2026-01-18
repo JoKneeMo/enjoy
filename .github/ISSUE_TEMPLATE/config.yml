@@ -1,8 +1,21 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 🎮 Play the Game
-    url: https://fabriziosalmi.github.io/enjoy/
-    about: Jump in and contribute directly!
-  - name: 📜 Read the Lore
-    url: https://github.com/fabriziosalmi/enjoy/blob/main/LORE.md
-    about: Understand the game before playing
+  - name: 🎮 Start Playing
+    url: https://github.com/fabriziosalmi/enjoy/fork
+    about: Fork the repo and submit your first word to start playing!
+  - name: 📖 Read the Rules
+    url: https://github.com/fabriziosalmi/enjoy#-how-it-works-30-seconds
+    about: Learn how to play in 30 seconds
+  - name: 💬 Community Discussions
+    url: https://github.com/fabriziosalmi/enjoy/discussions
+    about: Join the community! Ask questions, share ideas, celebrate wins.
+  - name: 🎨 Art Gallery
+    url: https://github.com/fabriziosalmi/enjoy/tree/main/art
+    about: View the procedurally generated artwork
+  - name: 📜 The Eternal Chronicle
+    url: https://github.com/fabriziosalmi/enjoy/tree/main/story
+    about: Read the story of our collective journey
+  - name: 📜 The Manifesto
+    url: https://github.com/fabriziosalmi/enjoy/blob/main/MANIFESTO.md
+    about: Our principles and philosophy
+

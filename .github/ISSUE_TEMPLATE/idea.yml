@@ -1,0 +1,63 @@
+name: 💡 Idea / Suggestion
+description: Share an idea to make enjoy even better!
+title: "[IDEA] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 💡 Share Your Vision!
+        
+        We love ideas from the community. Every suggestion makes enjoy better for everyone.
+        Remember: this is a collaborative game - your idea could become reality!
+        
+  - type: textarea
+    id: idea
+    attributes:
+      label: What's your idea?
+      description: Describe your idea in detail. What would it do? How would it work?
+      placeholder: "I think it would be amazing if..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What area does this idea relate to?
+      options:
+        - 🎮 Gameplay mechanics
+        - 🏆 Achievements & rewards
+        - 🎨 Art & visuals
+        - 📜 Story & lore
+        - 💜 Community features
+        - 🤖 Automation & bots
+        - 📊 Stats & metrics
+        - ⏰ Time system
+        - 🧬 Entropy & philosophy
+        - 🔧 Technical improvements
+        - 📚 Documentation
+        - 🌍 Accessibility & i18n
+        - ✨ Other magic
+    validations:
+      required: true
+      
+  - type: textarea
+    id: impact
+    attributes:
+      label: Why would this be awesome?
+      description: How would this benefit the community?
+      placeholder: "This would help players by..."
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Would you like to help implement this?
+      description: No pressure! Just curious.
+      options:
+        - label: Yes, I'd love to contribute!
+        - label: I can help test it
+        - label: I can help with documentation
+        - label: Just sharing the idea for now
