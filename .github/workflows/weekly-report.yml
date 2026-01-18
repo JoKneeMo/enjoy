@@ -110,6 +110,40 @@ jobs:
               }
             }
             
+            // ═══════════════════════════════════════════════════════════
+            // 🚫 CLOSED/REFUSED PRs
+            // ═══════════════════════════════════════════════════════════
+            const { data: closedPRs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 50
+            });
+            
+            const refusedPRs = closedPRs.filter(pr => {
+              const closedAt = new Date(pr.closed_at);
+              return !pr.merged_at && closedAt >= weekAgo;
+            });
+            
+            if (refusedPRs.length > 0) {
+              report += `\n## 🚫 PRs Closed Without Merge\n\n`;
+              report += `| PR | Author | Reason | Closed |\n`;
+              report += `|----|--------|--------|--------|\n`;
+              
+              for (const pr of refusedPRs.slice(0, 10)) {
+                const closedDate = new Date(pr.closed_at).toLocaleDateString();
+                // Check if it was the author who closed it (abandoned) or someone else (refused)
+                const reason = pr.user.login === pr.closed_by?.login ? '🏃 Abandoned' : '❌ Refused';
+                report += `| [#${pr.number}](${pr.html_url}) | @${pr.user.login} | ${reason} | ${closedDate} |\n`;
+              }
+              
+              report += `\n> 💡 *PRs closed without merge don't count against you. Keep trying!*\n`;
+            } else {
+              report += `\n## ✅ No Refused PRs This Week\n\nAll submitted PRs were merged! Great work everyone! 🎉\n`;
+            }
+            
             report += `\n---\n*Keep playing! Every action counts. [Check time bonuses](https://fabriziosalmi.github.io/enjoy/time.html)*\n`;
             
             console.log(report);
